@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Get Salary Info</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f8ff;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .container input, .container button {
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            width: 90%;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        .container button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .container button:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 800px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #e6f2ff;
+        }
+
+        .error {
+            color: red;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        #output {
+            width: 100%;
+            max-width: 800px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Get Employee Salary Details</h2>
+
+    <div class="container">
+        <input type="text" id="empId" placeholder="Enter Employee ID">
+        <button onclick="fetchSalary()">Get Salary</button>
+    </div>
+
+    <div id="output"></div>
+
+    <script>
+        async function fetchSalary() {
+            const empId = document.getElementById("empId").value;
+            const output = document.getElementById("output");
+            output.innerHTML = '';
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/get_salary', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ EmployeeID: empId })
+                });
+
+                if (!response.ok) throw new Error("Failed to fetch salary info");
+
+                const data = await response.json();
+
+                if (data.error) {
+                    output.innerHTML = `<div class="error">${data.error}</div>`;
+                    return;
+                }
+
+                let html = `<table>
+                                <tr>
+                                    <th>Salary ID</th>
+                                    <th>Employee ID</th>
+                                    <th>Base Salary</th>
+                                    <th>Total Bonuses</th>
+                                    <th>Total Deductions</th>
+                                    <th>Final Salary</th>
+                                </tr>`;
+
+                data.forEach(row => {
+                    html += `<tr>
+                                <td>${row.SalaryID}</td>
+                                <td>${row.EmployeeID}</td>
+                                <td>${row.SalaryAmount}</td>
+                                <td>${row.TotalBonuses}</td>
+                                <td>${row.TotalDeductions}</td>
+                                <td>${row.FinalSalary}</td>
+                            </tr>`;
+                });
+
+                html += `</table>`;
+                output.innerHTML = html;
+
+            } catch (error) {
+                output.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

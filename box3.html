@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Employee</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: aliceblue;
+            padding: 50px;
+        }
+        .container {
+            background-color: white;
+            width: 300px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: darkred;
+        }
+        input[type="text"], button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        button {
+            background-color: rgb(20, 130, 220);
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: darkred;
+        }
+        .result {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Delete Employee</h2>
+        <form id="deleteForm">
+            <label for="employeeId">Employee ID:</label>
+            <input type="text" id="employeeId" name="EmployeeID" required>
+            <button type="submit">Delete</button>
+        </form>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('deleteForm');
+        const resultDiv = document.getElementById('result');
+
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const employeeId = document.getElementById('employeeId').value;
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/delete_employee', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ EmployeeID: employeeId })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    resultDiv.style.color = 'green';
+                    resultDiv.textContent = data.message;
+                } else {
+                    resultDiv.style.color = 'red';
+                    resultDiv.textContent = data.error || data.message;
+                }
+            } catch (error) {
+                resultDiv.style.color = 'red';
+                resultDiv.textContent = 'Error: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>

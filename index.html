@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Employee</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background-color: #f4f4f4;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+        }
+        input {
+            width: 300px;
+        }
+        button {
+            background-color: rgb(20, 130, 220);
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: darkred;
+        }
+        #result {
+            margin-top: 30px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+        th {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <h2>Employee Search</h2>
+    <div style="text-align:center;">
+        <input type="text" id="searchInput" placeholder="Enter Employee ID or Full Name">
+        <button onclick="searchEmployee()">Search</button>
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+        function searchEmployee() {
+            const query = document.getElementById("searchInput").value;
+
+            fetch("http://127.0.0.1:5000/employees", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ employees: query }) // Must match Flask's key
+            })
+            .then(res => res.json())
+            .then(data => {
+                const resultDiv = document.getElementById("result");
+                if (!Array.isArray(data) || data.length === 0) {
+                    resultDiv.innerHTML = "<p>No results found.</p>";
+                    return;
+                }
+
+                let html = "<table><tr>";
+                for (const key in data[0]) {
+                    html += `<th>${key}</th>`;
+                }
+                html += "</tr>";
+
+                data.forEach(emp => {
+                    html += "<tr>";
+                    for (const key in emp) {
+                        html += `<td>${emp[key]}</td>`;
+                    }
+                    html += "</tr>";
+                });
+
+                html += "</table>";
+                resultDiv.innerHTML = html;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("result").innerText = "An error occurred while fetching data.";
+            });
+        }
+    </script>
+</body>
+</html>

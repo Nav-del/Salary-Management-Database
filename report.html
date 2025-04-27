@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Salary Summary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef6fb;
+            padding: 30px;
+        }
+
+        .container {
+            background: white;
+            max-width: 600px;
+            margin: auto;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 25px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Company Salary Summary</h2>
+        <button onclick="fetchSummary()">Load Summary</button>
+
+        <table id="summaryTable" style="display:none;">
+            <tr><th>Total Salary</th><td id="totalSalary"></td></tr>
+            <tr><th>Average Salary</th><td id="avgSalary"></td></tr>
+            <tr><th>Employee Count</th><td id="employeeCount"></td></tr>
+            <tr><th>Total Deductions</th><td id="deductions"></td></tr>
+            <tr><th>Total Taxes</th><td id="taxes"></td></tr>
+        </table>
+    </div>
+
+    <script>
+        async function fetchSummary() {
+            try {
+                const res = await fetch('http://127.0.0.1:5000/salary_summary');
+                const data = await res.json();
+
+                document.getElementById("totalSalary").textContent = data.TotalSalary;
+                document.getElementById("avgSalary").textContent = data.AverageSalary;
+                document.getElementById("employeeCount").textContent = data.EmployeeCount;
+                document.getElementById("deductions").textContent = data.TotalDeductions;
+                document.getElementById("taxes").textContent = data.TotalTaxes;
+
+                document.getElementById("summaryTable").style.display = "table";
+
+            } catch (err) {
+                alert("Failed to load summary: " + err.message);
+            }
+        }
+    </script>
+</body>
+</html>
